@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <title>VectorLite · 轻量矢量工作台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup" aria-label="VectorLite">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <div class="brand-name">VectorLite</div>
+            <div class="brand-subtitle">轻量矢量工作台</div>
+          </div>
+        </div>
+
+        <div class="document-actions" aria-label="文件操作">
+          <button class="button button-quiet" data-action="new" title="新建文档 (Ctrl/Cmd+N)">新建</button>
+          <button class="button button-quiet" data-action="open" title="打开 SVG 文件 (Ctrl/Cmd+O)">打开</button>
+          <button class="button button-primary" data-action="save" title="保存 SVG 文件 (Ctrl/Cmd+S)">保存 SVG</button>
+          <button class="button button-quiet" data-action="export-png" title="导出 PNG">导出 PNG</button>
+          <input id="file-input" type="file" accept=".svg,.ai,image/svg+xml,application/postscript,application/pdf" hidden />
+        </div>
+
+        <div class="document-state">
+          <span id="document-name">未命名.svg</span>
+          <span class="state-dot" id="dirty-dot" aria-label="已保存"></span>
+          <span id="document-status">已保存</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="toolbar" aria-label="工具栏">
+          <div class="tool-group">
+            <button class="tool-button is-active" data-tool="select" title="选择工具 (V)" aria-label="选择工具"><svg viewBox="0 0 24 24"><path d="M5 3.5 18.5 14l-6.1 1.2 3.7 5.3-2.2 1.4-3.7-5.3-4.2 4.6L5 3.5Z"/></svg></button>
+            <button class="tool-button" data-tool="rect" title="矩形工具 (R)" aria-label="矩形工具"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1.5"/></svg></button>
+            <button class="tool-button" data-tool="ellipse" title="椭圆工具 (O)" aria-label="椭圆工具"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="8" ry="6.5"/></svg></button>
+            <button class="tool-button" data-tool="line" title="直线工具 (L)" aria-label="直线工具"><svg viewBox="0 0 24 24"><path d="m5 19 14-14"/></svg></button>
+            <button class="tool-button" data-tool="pen" title="钢笔工具 (P)" aria-label="钢笔工具"><svg viewBox="0 0 24 24"><path d="m13.6 4.2 6.2 6.2-8.6 8.6-5.5 1 1-5.5 8.6-8.6Z"/><path d="m12.4 5.4 6.2 6.2M7.2 14.5l3 3"/></svg></button>
+            <button class="tool-button" data-tool="text" title="文字工具 (T)" aria-label="文字工具"><svg viewBox="0 0 24 24"><path d="M5 5h14M12 5v14M8.5 19h7"/></svg></button>
+          </div>
+          <div class="tool-divider"></div>
+          <div class="tool-group">
+            <button class="tool-button" data-action="undo" title="撤销 (Ctrl/Cmd+Z)" aria-label="撤销"><svg viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M4 12h9a6 6 0 0 1 6 6"/></svg></button>
+            <button class="tool-button" data-action="redo" title="重做 (Ctrl/Cmd+Shift+Z)" aria-label="重做"><svg viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M20 12h-9a6 6 0 0 0-6 6"/></svg></button>
+          </div>
+          <div class="toolbar-footer">
+            <div class="compatibility-badge" title="当前为独立网页模式，AI 桥接将在桌面封装阶段加入"><span class="status-pulse"></span><span>独立模式</span></div>
+          </div>
+        </aside>
+
+        <section class="canvas-workspace" aria-label="画布区域">
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar-group">
+              <button class="icon-button" data-action="fit" title="适合窗口" aria-label="适合窗口"><svg viewBox="0 0 24 24"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"/><path d="M8 4 4 8M16 4l4 4M20 16l-4 4M4 16l4 4"/></svg></button>
+              <button class="icon-button" data-action="zoom-out" title="缩小" aria-label="缩小"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4M8.5 11h5"/></svg></button>
+              <span id="zoom-label" class="zoom-label">100%</span>
+              <button class="icon-button" data-action="zoom-in" title="放大" aria-label="放大"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4M8.5 11h5M11 8.5v5"/></svg></button>
+            </div>
+            <div class="canvas-toolbar-center"><span class="canvas-title">画板 01</span><span class="canvas-separator"></span><span id="selection-summary">未选择对象</span></div>
+            <div class="canvas-toolbar-group canvas-toolbar-right"><span class="canvas-hint">滚轮缩放 · 空格拖动画布</span></div>
+          </div>
+          <div class="canvas-viewport" id="canvas-viewport" tabindex="0">
+            <div class="canvas-stage" id="canvas-stage">
+              <svg id="editor-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="矢量编辑画布">
+                <defs>
+                  <pattern id="canvas-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#e3e8f0" stroke-width="1" />
+                  </pattern>
+                </defs>
+                <rect id="artboard-background" x="0" y="0" width="1200" height="800" fill="#ffffff" pointer-events="none" />
+                <rect class="canvas-grid" x="0" y="0" width="1200" height="800" fill="url(#canvas-grid)" pointer-events="none" />
+                <g id="artboard-elements"></g>
+                <g id="selection-layer" aria-hidden="true"></g>
+                <g id="draft-layer" aria-hidden="true"></g>
+              </svg>
+            </div>
+          </div>
+          <div class="canvas-statusbar">
+            <span id="cursor-position">X 0 · Y 0</span>
+            <span>SVG 文档 · 1200 × 800</span>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="属性与图层">
+          <section class="inspector-section properties-section">
+            <div class="section-heading"><h2>属性</h2><span id="property-type">未选择</span></div>
+            <div id="empty-properties" class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5M8 16h7"/></svg></div><p>选择一个对象以编辑属性</p></div>
+            <div id="property-form" class="property-form" hidden>
+              <label class="field field-wide"><span>名称</span><input id="prop-name" type="text" /></label>
+              <div class="field-row">
+                <label class="field"><span>填充</span><span class="color-input"><input id="prop-fill" type="color" /><input id="prop-fill-text" type="text" maxlength="9" /></span></label>
+                <label class="field"><span>描边</span><span class="color-input"><input id="prop-stroke" type="color" /><input id="prop-stroke-text" type="text" maxlength="9" /></span></label>
+              </div>
+              <div class="field-row">
+                <label class="field"><span>描边宽度</span><input id="prop-stroke-width" type="number" min="0" max="100" step="0.5" /></label>
+                <label class="field"><span>不透明度</span><div class="range-input"><input id="prop-opacity" type="range" min="0" max="1" step="0.01" /><output id="prop-opacity-value">100%</output></div></label>
+              </div>
+              <div id="text-fields" class="text-fields" hidden>
+                <label class="field field-wide"><span>文字内容</span><textarea id="prop-text" rows="2"></textarea></label>
+                <div class="field-row"><label class="field"><span>字号</span><input id="prop-font-size" type="number" min="6" max="300" step="1" /></label><label class="field"><span>字重</span><select id="prop-font-weight"><option value="400">常规</option><option value="500">中等</option><option value="600">半粗</option><option value="700">粗体</option></select></label></div>
+              </div>
+              <div class="property-actions"><button class="button button-quiet" data-action="send-back">后移一层</button><button class="button button-quiet" data-action="bring-front">前移一层</button></div>
+            </div>
+          </section>
+
+          <section class="inspector-section layers-section">
+            <div class="section-heading"><h2>图层</h2><span id="layer-count">0 个对象</span></div>
+            <div id="layers-list" class="layers-list"></div>
+            <div class="layer-footer"><span>使用属性区按钮调整层级</span><button class="icon-button" data-action="delete-selected" title="删除选中对象" aria-label="删除选中对象"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M7 7l1 14h8l1-14"/></svg></button></div>
+          </section>
+
+          <section class="inspector-section compatibility-section">
+            <div class="section-heading"><h2>格式兼容</h2><span class="compatibility-label">预览</span></div>
+            <p>当前网页模式保存为 SVG。原生 <strong>.ai</strong> 读写需要在桌面版中调用本机 Illustrator 桥接。</p>
+            <button class="button button-outline button-full" data-action="bridge-info">查看兼容说明</button>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="text-editor" class="floating-text-editor" hidden><textarea aria-label="编辑文字"></textarea><div class="floating-text-actions"><button data-text-action="cancel">取消</button><button class="is-primary" data-text-action="apply">应用</button></div></div>
+    <script src="app.js"></script>
+  </body>
+</html>
